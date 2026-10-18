@@ -193,14 +193,131 @@ export const forgotPasswordService = async (email) => {
       "Content-Type": "application/json",
     },
     signal: AbortSignal.timeout(15000),
+    // body: JSON.stringify({
+    //   from: sender,
+    //   to: [user.email],
+    //   subject: "Reset your Evangadi Forum password",
+    //   text:
+    //     `Hello ${user.first_name},\n\n` +
+    //     `Reset your password: ${resetLink}\n\n` +
+    //     "This link expires in 15 minutes.",
+    // }),
+
     body: JSON.stringify({
       from: sender,
       to: [user.email],
       subject: "Reset your Evangadi Forum password",
       text:
-        `Hello ${user.first_name},\n\n` +
-        `Reset your password: ${resetLink}\n\n` +
-        "This link expires in 15 minutes.",
+        `Reset your Evangadi Forum password:\n\n${resetLink}\n\n` +
+        "This link expires in 15 minutes.\n" +
+        "If you didn't request this, you can ignore this email.",
+      html: `
+    <!doctype html>
+    <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Reset your password</title>
+      </head>
+      <body style="margin:0;padding:0;background:#f3f5f9;
+        font-family:Arial,Helvetica,sans-serif;color:#253047;">
+
+        <div style="display:none;max-height:0;overflow:hidden;
+          opacity:0;mso-hide:all;">
+          Your secure password reset link expires in 15 minutes.
+        </div>
+
+        <table role="presentation" width="100%" cellspacing="0"
+          cellpadding="0" style="background:#f3f5f9;">
+          <tr>
+            <td align="center" style="padding:40px 16px;">
+              <table role="presentation" width="100%" cellspacing="0"
+                cellpadding="0" style="max-width:560px;background:#ffffff;
+                border:1px solid #e4e8ef;border-radius:16px;">
+
+                <tr>
+                  <td style="padding:30px 32px 24px;
+                    border-bottom:1px solid #edf0f5;">
+                    <span style="font-size:23px;font-weight:700;
+                      color:#182b4d;">Evangadi</span>
+                    <span style="font-size:23px;font-weight:700;
+                      color:#ed7d31;"> Forum</span>
+                    <p style="margin:8px 0 0;font-size:13px;color:#738097;">
+                      A community to learn, ask, and grow.
+                    </p>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td style="padding:32px;">
+                    <h1 style="margin:0 0 18px;font-size:27px;
+                      line-height:1.3;color:#182b4d;">
+                      Let's get you back in.
+                    </h1>
+
+                    <p style="margin:0 0 24px;font-size:16px;
+                      line-height:1.7;color:#596579;">
+                      We received a request to reset your password.
+                      Click the button below to choose a new one.
+                    </p>
+
+                    <table role="presentation" cellspacing="0" cellpadding="0">
+                      <tr>
+                        <td bgcolor="#ed7d31" style="border-radius:8px;
+                          mso-padding-alt:16px 28px;">
+                          <a href="${resetLink}"
+                            style="display:inline-block;padding:16px 28px;
+                            font-size:16px;font-weight:700;color:#ffffff;
+                            text-decoration:none;border-radius:8px;">
+                            Reset my password
+                          </a>
+                        </td>
+                      </tr>
+                    </table>
+
+                    <p style="margin:24px 0;font-size:14px;
+                      line-height:1.6;color:#596579;">
+                      For your security, this link expires in
+                      <strong>15 minutes</strong>.
+                      Please don't share it with anyone.
+                    </p>
+
+                    <div style="padding:16px;background:#f6f8fb;
+                      border-radius:8px;">
+                      <p style="margin:0;font-size:13px;
+                        line-height:1.7;color:#738097;">
+                        Didn't request a password reset?
+                        You can safely ignore this email.
+                        Your password will stay the same.
+                      </p>
+                    </div>
+
+                    <p style="margin:26px 0 8px;font-size:12px;
+                      line-height:1.6;color:#738097;">
+                      Button not working? Copy this link into your browser:
+                    </p>
+                    <a href="${resetLink}"
+                      style="font-size:12px;line-height:1.7;
+                      color:#b64d0c;word-break:break-all;">
+                      ${resetLink}
+                    </a>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td style="padding:20px 32px;border-top:1px solid #edf0f5;
+                    font-size:12px;line-height:1.6;color:#8a94a6;">
+                    Evangadi Forum &middot; Account security<br>
+                    This is an automated message.
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </body>
+    </html>
+  `,
     }),
   });
 
