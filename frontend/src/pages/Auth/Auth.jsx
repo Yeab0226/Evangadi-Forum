@@ -17,6 +17,7 @@ import {
 import { useAuth } from "../../contexts/AuthContext";
 import ThemeToggle from "../../components/ThemeToggle/ThemeToggle";
 import styles from "./Auth.module.css";
+import { getPasswordError } from "../../utils/password.validation";
 
 export default function Auth() {
   // Get navigation and authentication functions
@@ -93,8 +94,10 @@ export default function Auth() {
         setError("Last name must be at least 3 characters long.");
         return;
       }
-      if (password.length < 6) {
-        setError("Password must be at least 6 characters long.");
+      const passwordError = getPasswordError(password);
+
+      if (passwordError) {
+        setError(passwordError);
         return;
       }
     }
@@ -345,10 +348,29 @@ export default function Auth() {
                       )}
                     </button>
                   </div>
+
+                  {!isLogin && (
+                    <p
+                      style={{
+                        fontSize: "13px",
+                        color: "#596579",
+                        lineHeight: 1.6,
+                      }}
+                    >
+                      Use at least 12 characters, including an uppercase letter,
+                      a lowercase letter, and a special character.
+                    </p>
+                  )}
                 </div>
 
                 {successMessage && (
-                  <div className={styles.auth__success} role="status" aria-live="polite">{successMessage}</div>
+                  <div
+                    className={styles.auth__success}
+                    role="status"
+                    aria-live="polite"
+                  >
+                    {successMessage}
+                  </div>
                 )}
 
                 {error && <div className={styles.auth__error}>{error}</div>}
@@ -393,19 +415,30 @@ export default function Auth() {
 
                         try {
                           await googleLogin(credentialResponse.credential);
-                          setSuccessMessage("Sign-in successful! Redirecting to the dashboard…");
+                          setSuccessMessage(
+                            "Sign-in successful! Redirecting to the dashboard…",
+                          );
 
-
-                          await new Promise((resolve) => setTimeout(resolve, 1500));
-                          navigate("/dashboard", { replace: true, state: null });
+                          await new Promise((resolve) =>
+                            setTimeout(resolve, 1500),
+                          );
+                          navigate("/dashboard", {
+                            replace: true,
+                            state: null,
+                          });
                         } catch (error) {
-                          setError(error.message || "Google sign-in failed. Please try again.");
+                          setError(
+                            error.message ||
+                              "Google sign-in failed. Please try again.",
+                          );
                         } finally {
                           setLoading(false);
                         }
                       }}
                       onError={() => {
-                        setError("Google sign-in was cancelled or could not be completed.");
+                        setError(
+                          "Google sign-in was cancelled or could not be completed.",
+                        );
                       }}
                     />
                   </div>

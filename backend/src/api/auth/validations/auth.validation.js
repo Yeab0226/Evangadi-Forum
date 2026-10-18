@@ -1,5 +1,20 @@
 import { body } from "express-validator";
 import { validationErrorHandler } from "../../../middleware/validation-handler.js";
+
+const passwordRule = () =>
+  body("password")
+    .isString()
+    .withMessage("Password is required.")
+    .bail()
+    .isLength({ min: 12 })
+    .withMessage("Password must contain at least 12 characters.")
+    .matches(/[A-Z]/)
+    .withMessage("Include at least one uppercase letter.")
+    .matches(/[a-z]/)
+    .withMessage("Include at least one lowercase letter.")
+    .matches(/[^A-Za-z0-9\s]/)
+    .withMessage("Include at least one special character.");
+
 //Express puts the data into req, and express-validator provides different functions (body, param, query, etc.) that create middleware to validate those different locations
 
 // Each body() call creates a validation middleware for a field in req.body.
@@ -31,11 +46,7 @@ export const registerValidation = [
     .withMessage("A valid email address is required")
     .normalizeEmail(),
   //password-middleware
-  body("password")
-    .notEmpty()
-    .withMessage("Password is required")
-    .isLength({ min: 6 })
-    .withMessage("Password must be at least 6 characters long"),
+  passwordRule(), // Use the passwordRule function to validate the password field
 
   // Checks the validation results collected above.
   validationErrorHandler,
@@ -53,7 +64,6 @@ export const loginValidation = [
   validationErrorHandler,
 ];
 
-
 export const forgotPasswordValidation = [
   body("email")
     .notEmpty()
@@ -66,10 +76,6 @@ export const forgotPasswordValidation = [
 
 export const resetPasswordValidation = [
   body("token").notEmpty().withMessage("Reset token is required"),
-  body("password")
-    .notEmpty()
-    .withMessage("Password is required")
-    .isLength({ min: 6 })
-    .withMessage("Password must be at least 6 characters long"),
+  passwordRule(),
   validationErrorHandler,
 ];
