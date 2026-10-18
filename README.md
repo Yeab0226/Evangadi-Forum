@@ -38,7 +38,7 @@ Some features require external service configuration. See the current limitation
 ## Project Structure
 
 ```text
-Evangadi/
+Evangadi-Forum/
 ├── backend/
 │   ├── db/
 │   │   ├── config.js
@@ -80,8 +80,8 @@ Evangadi/
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/Yeab0226/Evangadi.git
-cd Evangadi
+git clone https://github.com/Yeab0226/Evangadi-forum.git
+cd Evangadi-forum
 ```
 
 ### 2. Set up the database
@@ -111,7 +111,7 @@ DB_HOST=localhost
 DB_PORT=3306
 DB_USER=your_mysql_user
 DB_PASS=your_mysql_password
-DB_NAME=evangadi_forum
+DB_NAME=_forum
 DB_SSL_CA=
 
 JWT_SECRET=replace_with_a_strong_random_secret
