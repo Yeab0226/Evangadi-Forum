@@ -75,9 +75,6 @@ export default function ResetPassword() {
         <div className={styles.auth__formContainer}>
           <div className={styles.auth__formHeader}>
             <h2 className={styles.auth__formTitle}>Create a new password</h2>
-            <p className={styles.auth__formSubtitle}>
-              Choose a password with at least 6 characters.
-            </p>
           </div>
 
           <form className={styles.auth__form} onSubmit={handleSubmit}>
