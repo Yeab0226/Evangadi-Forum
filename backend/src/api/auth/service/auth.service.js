@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import nodemailer from "nodemailer";
+
 import { safeExecute } from "../../../../db/config.js";
 import {
   BadRequestError,
@@ -159,16 +159,6 @@ export const loginService = async ({ email, password }) => {
 
 const RESET_TOKEN_EXPIRES_IN = "15m";
 
-const createEmailTransporter = () => {
-  return nodemailer.createTransport({
-    service: process.env.EMAIL_SERVICE || "gmail",
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASSWORD,
-    },
-  });
-};
-
 export const forgotPasswordService = async (email) => {
   const normalizedEmail = normalizeEmail(email);
   const sql =
@@ -189,13 +179,35 @@ export const forgotPasswordService = async (email) => {
 
   const resetLink = `${process.env.FRONTEND_URL || "http://localhost:5173"}/reset-password?token=${resetToken}`;
 
-  const transporter = createEmailTransporter();
-  await transporter.sendMail({
-    from: process.env.EMAIL_USER,
-    to: user.email,
-    subject: "Reset your Evangadi Forum password",
-    text: `Hello ${user.first_name},\n\nClick this link to reset your password: ${resetLink}\n\nThis link expires in 15 minutes.`,
+  const apiKey = process.env.RESEND_API_KEY;
+  const sender = process.env.EMAIL_FROM;
+
+  if (!apiKey || !sender) {
+    throw new Error("Password-reset email is not configured");
+  }
+
+  const response = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    signal: AbortSignal.timeout(15000),
+    body: JSON.stringify({
+      from: sender,
+      to: [user.email],
+      subject: "Reset your Evangadi Forum password",
+      text:
+        `Hello ${user.first_name},\n\n` +
+        `Reset your password: ${resetLink}\n\n` +
+        "This link expires in 15 minutes.",
+    }),
   });
+
+  if (!response.ok) {
+    console.error("Reset email rejected:", response.status);
+    throw new Error("Unable to send password-reset email");
+  }
 };
 
 export const resetPasswordService = async ({ token, password }) => {
